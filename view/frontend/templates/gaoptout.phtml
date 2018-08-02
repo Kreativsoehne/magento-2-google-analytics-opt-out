@@ -1,0 +1,58 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// @codingStandardsIgnoreFile
+
+?>
+<?php 
+$accountId = \Magento\Framework\App\ObjectManager::getInstance()
+  ->get('Magento\Framework\App\Config\ScopeConfigInterface')
+  ->getValue('google/analytics/account');
+?>
+<script type="text/javascript">
+
+require([
+    "jquery"
+], function($){
+//<![CDATA[
+    var gaProperty = '<?php echo $accountId ?>';
+    var disableStr = 'ga-disable-' + gaProperty;
+    
+    if (document.cookie.indexOf(disableStr + '=true') > -1) {
+        window[disableStr] = true;
+    }
+    
+    function gaOptIn()
+    {
+        document.cookie = disableStr + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        jQuery('.ga-optout').prop('checked', false);
+        alert('Google Analytics has been activated for your device');
+    }
+    
+    function gaOptOut()
+    {
+        document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+        window[disableStr] = true;
+        jQuery('.ga-optout').prop('checked', true);
+        alert('Google Analytics has been deactivated for your device');
+    }
+    
+    jQuery(function(){
+        if (document.cookie.indexOf(disableStr) >= 0) {
+            jQuery('.ga-optout').prop('checked', true);
+        };
+    
+        jQuery('.ga-optout').change(function(){
+            if(jQuery(this).is(':checked')) {
+                gaOptOut();
+            } else {
+                gaOptIn();
+            }
+        });
+    });
+//]]>
+});
+</script>
